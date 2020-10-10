@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/asuforce/gin-gorm-tutorial/db"
-	"github.com/asuforce/gin-gorm-tutorial/server"
+	"github.com/fieldflat/abome/db"
+	"github.com/fieldflat/abome/server"
 )
 
 func main() {

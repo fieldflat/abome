@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/asuforce/gin-gorm-tutorial/controller"
+	"github.com/fieldflat/abome/controller"
 )
 
 // Init is initialize server
