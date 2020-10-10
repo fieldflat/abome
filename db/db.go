@@ -1,7 +1,8 @@
-package db
+package main
 
 import (
-	"github.com/fieldflat/abome/main"
+	"log"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // Use PostgreSQL in gorm
 )
@@ -18,10 +19,12 @@ func Init() {
 		panic(err)
 	}
 	autoMigration()
+	log.Println("[OK] DB Init done!")
 }
 
 // GetDB is called in models
 func GetDB() *gorm.DB {
+	log.Println("[*] call GetDB")
 	return db
 }
 
@@ -30,8 +33,10 @@ func Close() {
 	if err := db.Close(); err != nil {
 		panic(err)
 	}
+	log.Println("[OK] DB Close done!")
 }
 
 func autoMigration() {
-	db.AutoMigrate(&main.User{})
+	db.AutoMigrate(&User{})
+	log.Println("[OK] DB AutoMigration done!")
 }

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/fieldflat/abome/db"
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 )
@@ -43,7 +42,7 @@ func main() {
 		user.UserID = c.PostForm("user_id")
 		user.UserName = c.PostForm("user_name")
 		user.Email = c.PostForm("email")
-		user.Password = c.PostForm("password")
+		user.Password, err = passwordHash(c.PostForm("password"))
 		log.Println(user)
 	})
 	router.POST("/login", func(c *gin.Context) {
@@ -53,7 +52,7 @@ func main() {
 		log.Println(c)
 	})
 
-	db.Init()
+	Init()
 	router.Run(":" + port)
-	db.Close()
+	Close()
 }
