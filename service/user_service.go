@@ -1,10 +1,13 @@
 package user
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/fieldflat/abome/db"
 	"github.com/fieldflat/abome/entity"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Service procides user's behavior
@@ -12,6 +15,20 @@ type Service struct{}
 
 // User is alias of entity.User struct
 type User entity.User
+
+// generate password hash
+func passwordHash(pw string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), err
+}
+
+// check verification of password
+func passwordVerify(hash, pw string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
+}
 
 // GetAll is get all User
 func (s Service) GetAll() ([]User, error) {
@@ -25,20 +42,20 @@ func (s Service) GetAll() ([]User, error) {
 	return u, nil
 }
 
-// CreateModel is create User model
+// CreateModel creates User model
 func (s Service) CreateModel(c *gin.Context) (User, error) {
+	log.Println("[call] service/user_service.go | func CreateModel")
 	db := db.GetDB()
-	var u User
+	var user User
 
-	if err := c.BindJSON(&u); err != nil {
-		return u, err
-	}
-
-	if err := db.Create(&u).Error; err != nil {
-		return u, err
-	}
-
-	return u, nil
+	user.UserID = c.PostForm("user_id")
+	user.UserName = c.PostForm("user_name")
+	user.Email = c.PostForm("email")
+	user.Password, _ = passwordHash(c.PostForm("password"))
+	db.Create(&user)
+	log.Println(user)
+	log.Println("[call end] service/user_service.go | func CreateModel")
+	return user, nil
 }
 
 // GetByID is get a User

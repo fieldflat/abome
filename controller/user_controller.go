@@ -27,7 +27,7 @@ func (pc Controller) Index(c *gin.Context) {
 
 // Create action: POST /users
 func (pc Controller) Create(c *gin.Context) {
-	log.Println("[call] user_controller/Create")
+	log.Println("[call] controller/user_controller.go | func Create")
 	var s user.Service
 	p, err := s.CreateModel(c)
 
@@ -37,7 +37,7 @@ func (pc Controller) Create(c *gin.Context) {
 	} else {
 		c.JSON(201, p)
 	}
-	log.Println("[end] user_controller/Create")
+	log.Println("[call end] controller/user_controller.go | | func Create")
 }
 
 // Show action: GET /users/:id

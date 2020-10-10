@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	user "github.com/fieldflat/abome/controller"
 	"github.com/fieldflat/abome/entity"
-	"github.com/fieldflat/abome/user"
 	"github.com/gin-gonic/gin"
 )
 
