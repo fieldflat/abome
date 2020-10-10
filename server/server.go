@@ -52,15 +52,16 @@ func router() *gin.Engine {
 		log.Println(c)
 	})
 
-	// u := r.Group("/users")
-	// {
-	// 	ctrl := user.Controller{}
-	// 	u.GET("", ctrl.Index)
-	// 	u.GET("/:id", ctrl.Show)
-	// 	u.POST("", ctrl.Create)
-	// 	u.PUT("/:id", ctrl.Update)
-	// 	u.DELETE("/:id", ctrl.Delete)
-	// }
+	// users
+	u := router.Group("/users")
+	{
+		ctrl := user.Controller{}
+		u.GET("", ctrl.Index)
+		u.GET("/:id", ctrl.Show)
+		u.POST("", ctrl.Create)
+		u.PUT("/:id", ctrl.Update)
+		u.DELETE("/:id", ctrl.Delete)
+	}
 
 	return router
 }

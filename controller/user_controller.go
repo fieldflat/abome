@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 
@@ -29,15 +30,14 @@ func (pc Controller) Index(c *gin.Context) {
 func (pc Controller) Create(c *gin.Context) {
 	log.Println("[call] controller/user_controller.go | func Create")
 	var s user.Service
-	p, err := s.CreateModel(c)
+	_, err := s.CreateModel(c)
 
 	if err != nil {
 		c.AbortWithStatus(400)
-		fmt.Println(err)
-	} else {
-		c.JSON(201, p)
+		log.Println(err)
 	}
 	log.Println("[call end] controller/user_controller.go | | func Create")
+	c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", nil)
 }
 
 // Show action: GET /users/:id
