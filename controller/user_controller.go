@@ -2,10 +2,11 @@ package user
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fieldflat/abome/service"
+	user "github.com/fieldflat/abome/service"
 )
 
 // Controller is user controlller
@@ -26,6 +27,7 @@ func (pc Controller) Index(c *gin.Context) {
 
 // Create action: POST /users
 func (pc Controller) Create(c *gin.Context) {
+	log.Println("[call] user_controller/Create")
 	var s user.Service
 	p, err := s.CreateModel(c)
 
@@ -35,6 +37,7 @@ func (pc Controller) Create(c *gin.Context) {
 	} else {
 		c.JSON(201, p)
 	}
+	log.Println("[end] user_controller/Create")
 }
 
 // Show action: GET /users/:id
