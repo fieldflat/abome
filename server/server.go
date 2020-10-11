@@ -30,11 +30,11 @@ func router() *gin.Engine {
 
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.LoadHTMLGlob("templates/*/*")
 	router.Static("/static", "static")
 	store := cookie.NewStore([]byte("secret"))
 	router.Use(sessions.Sessions("mysession", store))
-	ctrl := user.Controller{}
+	userCtrl := user.Controller{}
 
 	// root url
 	router.GET("/", func(c *gin.Context) {
@@ -45,7 +45,6 @@ func router() *gin.Engine {
 			"login_id":   session.Get("UserID"),
 		})
 	})
-
 	// signup and login
 	router.GET("/signup", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "signup.tmpl.html", nil)
@@ -53,19 +52,18 @@ func router() *gin.Engine {
 	router.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.tmpl.html", nil)
 	})
-	router.POST("/signup", ctrl.Create)
-	router.POST("/login", ctrl.Login)
-	router.GET("/logout", ctrl.Logout)
+	router.POST("/signup", userCtrl.Create)
+	router.POST("/login", userCtrl.Login)
+	router.GET("/logout", userCtrl.Logout)
 
 	// users
 	u := router.Group("/users")
 	{
-		ctrl := user.Controller{}
-		u.GET("", ctrl.IndexJSON)
-		u.GET("/:id", ctrl.Show)
-		u.POST("", ctrl.Create)
-		u.PUT("/:id", ctrl.Update)
-		u.DELETE("/:id", ctrl.Delete)
+		userCtrl := user.Controller{}
+		u.GET("/", userCtrl.Index)
+		u.GET("/:id", userCtrl.Show)
+		u.PUT("/:id", userCtrl.Update)
+		u.DELETE("/:id", userCtrl.Delete)
 	}
 
 	return router

@@ -19,7 +19,7 @@ type Controller struct{}
 type User entity.User
 
 // Index action: GET /users
-func (pc Controller) IndexJSON(c *gin.Context) {
+func (pc Controller) Index(c *gin.Context) {
 	var s user.Service
 	p, err := s.GetAll()
 
@@ -35,7 +35,7 @@ func (pc Controller) IndexJSON(c *gin.Context) {
 func (pc Controller) Create(c *gin.Context) {
 	log.Println("[call] controller/user_controller.go | func Create")
 	var s user.Service
-	user, err := s.CreateModel(c)
+	u, err := s.CreateModel(c)
 
 	if err != nil {
 		c.HTML(http.StatusOK, "signup.tmpl.html", gin.H{
@@ -43,12 +43,12 @@ func (pc Controller) Create(c *gin.Context) {
 		})
 		log.Println(err)
 	} else {
+		// save session information
 		session := sessions.Default(c)
-		if session.Get("UserID") != user.UserID {
-			createSession(c, user)
-		}
+		createSession(c, u)
+
 		log.Printf("%v\n", session.Get("UserID"))
-		c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", gin.H{
+		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"login_name": session.Get("UserName"),
 			"login_id":   session.Get("UserID"),
 		})
@@ -60,7 +60,7 @@ func (pc Controller) Create(c *gin.Context) {
 func (pc Controller) Login(c *gin.Context) {
 	log.Println("[call] controller/user_controller.go | func Login")
 	var s user.Service
-	u, err := s.GetByUserNameAndPassword(c.PostForm("email"), c.PostForm("password"))
+	u, err := s.GetByEmailAndPassword(c.PostForm("email"), c.PostForm("password"))
 
 	if err != nil {
 		c.HTML(http.StatusOK, "login.tmpl.html", gin.H{
@@ -68,12 +68,12 @@ func (pc Controller) Login(c *gin.Context) {
 		})
 		log.Println(err)
 	} else {
+		// save session information
 		session := sessions.Default(c)
-		if session.Get("UserID") != u.UserID {
-			createSession(c, u)
-		}
+		createSession(c, u)
+
 		log.Printf("%v\n", session.Get("UserID"))
-		c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", gin.H{
+		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"login_name": session.Get("UserName"),
 			"login_id":   session.Get("UserID"),
 		})
@@ -81,7 +81,7 @@ func (pc Controller) Login(c *gin.Context) {
 	log.Println("[call end] controller/user_controller.go | func Login")
 }
 
-// Login action: POST /logout
+// Logout action: POST /logout
 func (pc Controller) Logout(c *gin.Context) {
 	// delete session
 	session := sessions.Default(c)
@@ -89,7 +89,7 @@ func (pc Controller) Logout(c *gin.Context) {
 	session.Clear()
 	log.Println("clear session")
 	session.Save()
-	c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", gin.H{
+	c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 		"login_name": session.Get("UserName"),
 		"login_id":   session.Get("UserID"),
 	})
@@ -141,11 +141,11 @@ func (pc Controller) Delete(c *gin.Context) {
 //
 
 // createSession
-func createSession(c *gin.Context, user user.User) {
+func createSession(c *gin.Context, u user.User) {
 	log.Println("[call] controller/user_controller.go | func createSession")
 	session := sessions.Default(c)
-	session.Set("UserID", user.UserID)
-	session.Set("UserName", user.UserName)
+	session.Set("UserID", u.UserID)
+	session.Set("UserName", u.UserName)
 	session.Save()
 	log.Println("[call end] controller/user_controller.go | func createSession")
 }
