@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,7 @@ import (
 	"github.com/fieldflat/abome/db"
 	"github.com/fieldflat/abome/entity"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 // Service procides user's behavior
@@ -51,9 +53,29 @@ func (s Service) CreateModel(c *gin.Context) (User, error) {
 	user.UserID = c.PostForm("user_id")
 	user.UserName = c.PostForm("user_name")
 	user.Email = c.PostForm("email")
-	user.Password, _ = passwordHash(c.PostForm("password"))
+	password := c.PostForm("password")
+	passwordConfirmation := c.PostForm("password_confirmation")
+
+	// confirm password
+	if password != passwordConfirmation {
+		return user, errors.New("Password doesn't match. ")
+	}
+
+	if len(password) <= 6 {
+		return user, errors.New("Password minimum length is 6")
+	}
+
+	user.Password, _ = passwordHash(password)
+	passwordConfirmation, _ = passwordHash(passwordConfirmation)
+
+	// validation check
+	validate := validator.New()
+	errors := validate.Struct(user)
+	if errors != nil {
+		return user, errors
+	}
+
 	db.Create(&user)
-	log.Println(user)
 	log.Println("[call end] service/user_service.go | func CreateModel")
 	return user, nil
 }

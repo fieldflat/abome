@@ -14,7 +14,7 @@ import (
 type Controller struct{}
 
 // Index action: GET /users
-func (pc Controller) Index(c *gin.Context) {
+func (pc Controller) IndexJSON(c *gin.Context) {
 	var s user.Service
 	p, err := s.GetAll()
 
@@ -33,11 +33,14 @@ func (pc Controller) Create(c *gin.Context) {
 	_, err := s.CreateModel(c)
 
 	if err != nil {
-		c.AbortWithStatus(400)
+		c.HTML(http.StatusOK, "signup.tmpl.html", gin.H{
+			"err": err,
+		})
 		log.Println(err)
+	} else {
+		c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", nil)
 	}
 	log.Println("[call end] controller/user_controller.go | | func Create")
-	c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", nil)
 }
 
 // Show action: GET /users/:id
