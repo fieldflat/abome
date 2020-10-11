@@ -81,6 +81,20 @@ func (pc Controller) Login(c *gin.Context) {
 	log.Println("[call end] controller/user_controller.go | func Login")
 }
 
+// Login action: POST /logout
+func (pc Controller) Logout(c *gin.Context) {
+	// delete session
+	session := sessions.Default(c)
+	log.Println("get session")
+	session.Clear()
+	log.Println("clear session")
+	session.Save()
+	c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", gin.H{
+		"login_name": session.Get("UserName"),
+		"login_id":   session.Get("UserID"),
+	})
+}
+
 // Show action: GET /users/:id
 func (pc Controller) Show(c *gin.Context) {
 	id := c.Params.ByName("id")

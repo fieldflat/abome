@@ -25,9 +25,14 @@
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li class="navbar-right">
-        <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-book"></span>{{.login_id}} </a>
-      </li>
+      {{ if .login_id }}
+        <li class="navbar-right">
+          <a><span class="glyphicon glyphicon-book">{{.login_id}}</span></a>
+        </li>
+        <li class="navbar-right">
+          <a href="/logout"><span class="glyphicon glyphicon-book"></span> ログアウト </a>
+        </li>
+      {{ end }}
     </ul>
   </div>
 </nav>

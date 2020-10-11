@@ -55,6 +55,7 @@ func router() *gin.Engine {
 	})
 	router.POST("/signup", ctrl.Create)
 	router.POST("/login", ctrl.Login)
+	router.GET("/logout", ctrl.Logout)
 
 	// users
 	u := router.Group("/users")
