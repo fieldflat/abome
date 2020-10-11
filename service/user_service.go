@@ -61,7 +61,7 @@ func (s Service) CreateModel(c *gin.Context) (User, error) {
 		return user, errors.New("Password doesn't match. ")
 	}
 
-	if len(password) <= 6 {
+	if len(password) < 6 {
 		return user, errors.New("Password minimum length is 6")
 	}
 

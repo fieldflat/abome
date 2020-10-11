@@ -7,6 +7,8 @@ import (
 
 	user "github.com/fieldflat/abome/controller"
 	"github.com/fieldflat/abome/entity"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,11 +32,18 @@ func router() *gin.Engine {
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
+	store := cookie.NewStore([]byte("secret"))
+	router.Use(sessions.Sessions("mysession", store))
 	ctrl := user.Controller{}
 
 	// root url
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+		session := sessions.Default(c)
+		log.Println(session.Get("UserID"))
+		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_id":   session.Get("UserID"),
+		})
 	})
 
 	// signup and login

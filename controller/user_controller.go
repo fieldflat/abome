@@ -7,11 +7,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/fieldflat/abome/db"
+	"github.com/fieldflat/abome/entity"
 	user "github.com/fieldflat/abome/service"
+	"github.com/gin-contrib/sessions"
 )
 
 // Controller is user controlller
 type Controller struct{}
+
+// User is alias of entity.User struct
+type User entity.User
 
 // Index action: GET /users
 func (pc Controller) IndexJSON(c *gin.Context) {
@@ -30,7 +36,7 @@ func (pc Controller) IndexJSON(c *gin.Context) {
 func (pc Controller) Create(c *gin.Context) {
 	log.Println("[call] controller/user_controller.go | func Create")
 	var s user.Service
-	_, err := s.CreateModel(c)
+	user, err := s.CreateModel(c)
 
 	if err != nil {
 		c.HTML(http.StatusOK, "signup.tmpl.html", gin.H{
@@ -38,9 +44,17 @@ func (pc Controller) Create(c *gin.Context) {
 		})
 		log.Println(err)
 	} else {
-		c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", nil)
+		session := sessions.Default(c)
+		if session.Get("UserID") != user.UserID {
+			createSession(c, user)
+		}
+		log.Printf("%v\n", session.Get("UserID"))
+		c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_id":   session.Get("UserID"),
+		})
 	}
-	log.Println("[call end] controller/user_controller.go | | func Create")
+	log.Println("[call end] controller/user_controller.go | func Create")
 }
 
 // Show action: GET /users/:id
@@ -82,4 +96,26 @@ func (pc Controller) Delete(c *gin.Context) {
 	} else {
 		c.JSON(204, gin.H{"id #" + id: "deleted"})
 	}
+}
+
+//
+// private function
+//
+
+// userGet
+func userGet(username, pass string) (int, User) {
+	db := db.GetDB()
+	var user User
+	cnt := 0
+	db.Where("user_name = ?", username).Find(&user).Count(&cnt)
+
+	return cnt, user
+}
+
+// createSession
+func createSession(c *gin.Context, user user.User) {
+	session := sessions.Default(c)
+	session.Set("UserID", user.UserID)
+	session.Set("UserName", user.UserName)
+	session.Save()
 }
