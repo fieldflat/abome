@@ -18,29 +18,16 @@ type Service struct{}
 // User is alias of entity.User struct
 type User entity.User
 
-// generate password hash
-func passwordHash(pw string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hash), err
-}
-
-// check verification of password
-func passwordVerify(hash, pw string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
-}
-
 // GetAll is get all User
 func (s Service) GetAll() ([]User, error) {
+	log.Println("[call] service/user_service.go | func GetAll")
 	db := db.GetDB()
 	var u []User
 
 	if err := db.Find(&u).Error; err != nil {
 		return nil, err
 	}
-
+	log.Println("[call] service/user_service.go | func GetAll")
 	return u, nil
 }
 
@@ -60,7 +47,6 @@ func (s Service) CreateModel(c *gin.Context) (User, error) {
 	if password != passwordConfirmation {
 		return user, errors.New("Password doesn't match. ")
 	}
-
 	if len(password) < 6 {
 		return user, errors.New("Password minimum length is 6")
 	}
@@ -122,9 +108,9 @@ func (s Service) DeleteByID(id string) error {
 	return nil
 }
 
-// GetByUserNameAndPassword is a function
-func (s Service) GetByUserNameAndPassword(email, password string) (User, error) {
-	log.Println("[call] controller/user_service.go | func GetByUserNameAndPassword")
+// GetByEmailAndPassword is a function
+func (s Service) GetByEmailAndPassword(email, password string) (User, error) {
+	log.Println("[call] controller/user_service.go | func GetByEmailAndPassword")
 	db := db.GetDB()
 	var u User
 	db.Where("email = ?", email).Find(&u)
@@ -135,6 +121,28 @@ func (s Service) GetByUserNameAndPassword(email, password string) (User, error) 
 		return u, err
 	}
 	log.Println(u)
-	log.Println("[call end] controller/user_service.go | func GetByUserNameAndPassword")
+	log.Println("[call end] controller/user_service.go | func GetByEmailAndPassword")
 	return u, err
+}
+
+//
+// private function
+//
+
+// generate password hash
+func passwordHash(pw string) (string, error) {
+	log.Println("[call] service/user_service.go | func passwordHash")
+	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	log.Println("[call] service/user_service.go | func passwordHash")
+	return string(hash), err
+}
+
+// check verification of password
+func passwordVerify(hash, pw string) error {
+	log.Println("[call] service/user_service.go | func passwordVerify")
+	log.Println("[call] service/user_service.go | func passwordVerify")
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
 }
