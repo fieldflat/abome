@@ -18,8 +18,8 @@ type Controller struct{}
 // User is alias of entity.User struct
 type User entity.User
 
-// IndexJSON action: GET /users
-func (pc Controller) IndexJSON(c *gin.Context) {
+// Index action: GET /users
+func (pc Controller) Index(c *gin.Context) {
 	var s user.Service
 	p, err := s.GetAll()
 

@@ -60,8 +60,8 @@ func router() *gin.Engine {
 	u := router.Group("/users")
 	{
 		userCtrl := user.Controller{}
-		u.GET("/json", userCtrl.IndexJSON)
-		// u.GET("/:id", userCtrl.Show)
+		u.GET("/", userCtrl.Index)
+		u.GET("/:id", userCtrl.Show)
 		u.PUT("/:id", userCtrl.Update)
 		u.DELETE("/:id", userCtrl.Delete)
 	}
