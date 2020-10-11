@@ -121,3 +121,20 @@ func (s Service) DeleteByID(id string) error {
 
 	return nil
 }
+
+// GetByUserNameAndPassword is a function
+func (s Service) GetByUserNameAndPassword(email, password string) (User, error) {
+	log.Println("[call] controller/user_service.go | func GetByUserNameAndPassword")
+	db := db.GetDB()
+	var u User
+	db.Where("email = ?", email).Find(&u)
+	err := passwordVerify(u.Password, password)
+	if err != nil {
+		log.Println("[NG] password or email are incorrect.")
+		log.Println(u)
+		return u, err
+	}
+	log.Println(u)
+	log.Println("[call end] controller/user_service.go | func GetByUserNameAndPassword")
+	return u, err
+}

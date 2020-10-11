@@ -22,27 +22,29 @@
           </div>
           -->
 
-        <form role="form">
+        {{.err}}
+        <form role="form" action="/login" method="POST">
           <div class="divider-form"></div>
+          
           <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            <label for="email">Eメールアドレス</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Eメールアドレスを入力してください。">
           </div>
 
           <div class="divider-form"></div>
 
           <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            <label for="password">パスワード</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="パスワードを入力してください。">
           </div>
 
           <div class="divider-form"></div>
 
           <p class="text-center">You agree to the <strong>Terms & Conditions</strong>.</p>
 
-          <button type="submit" class="btn-block btn btn-lg btn-primary">Register Account</button>
+          <button type="submit" class="btn-block btn btn-lg btn-primary">ログインする</button>
 
-          <p class="text-center">Already have an account? <a href="#">Sign in here</a></p>
+          <p class="text-center">Already have an account? <a href="/signup">Sign in here</a></p>
         </form>
       </div>
     </div>

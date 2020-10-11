@@ -54,12 +54,7 @@ func router() *gin.Engine {
 		c.HTML(http.StatusOK, "login.tmpl.html", nil)
 	})
 	router.POST("/signup", ctrl.Create)
-	router.POST("/login", func(c *gin.Context) {
-		c.Header("Content-Type", "application/json")
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		log.Println(c)
-	})
+	router.POST("/login", ctrl.Login)
 
 	// users
 	u := router.Group("/users")

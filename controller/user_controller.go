@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fieldflat/abome/db"
 	"github.com/fieldflat/abome/entity"
 	user "github.com/fieldflat/abome/service"
 	"github.com/gin-contrib/sessions"
@@ -32,7 +31,7 @@ func (pc Controller) IndexJSON(c *gin.Context) {
 	}
 }
 
-// Create action: POST /users
+// Create action: POST /signup
 func (pc Controller) Create(c *gin.Context) {
 	log.Println("[call] controller/user_controller.go | func Create")
 	var s user.Service
@@ -55,6 +54,31 @@ func (pc Controller) Create(c *gin.Context) {
 		})
 	}
 	log.Println("[call end] controller/user_controller.go | func Create")
+}
+
+// Login action: POST /login
+func (pc Controller) Login(c *gin.Context) {
+	log.Println("[call] controller/user_controller.go | func Login")
+	var s user.Service
+	u, err := s.GetByUserNameAndPassword(c.PostForm("email"), c.PostForm("password"))
+
+	if err != nil {
+		c.HTML(http.StatusOK, "login.tmpl.html", gin.H{
+			"err": err,
+		})
+		log.Println(err)
+	} else {
+		session := sessions.Default(c)
+		if session.Get("UserID") != u.UserID {
+			createSession(c, u)
+		}
+		log.Printf("%v\n", session.Get("UserID"))
+		c.HTML(http.StatusTemporaryRedirect, "index.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_id":   session.Get("UserID"),
+		})
+	}
+	log.Println("[call end] controller/user_controller.go | func Login")
 }
 
 // Show action: GET /users/:id
@@ -102,20 +126,12 @@ func (pc Controller) Delete(c *gin.Context) {
 // private function
 //
 
-// userGet
-func userGet(username, pass string) (int, User) {
-	db := db.GetDB()
-	var user User
-	cnt := 0
-	db.Where("user_name = ?", username).Find(&user).Count(&cnt)
-
-	return cnt, user
-}
-
 // createSession
 func createSession(c *gin.Context, user user.User) {
+	log.Println("[call] controller/user_controller.go | func createSession")
 	session := sessions.Default(c)
 	session.Set("UserID", user.UserID)
 	session.Set("UserName", user.UserName)
 	session.Save()
+	log.Println("[call end] controller/user_controller.go | func createSession")
 }
