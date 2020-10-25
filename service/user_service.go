@@ -80,18 +80,26 @@ func (s Service) GetByID(id string) (User, error) {
 
 // UpdateByID is update a User
 func (s Service) UpdateByID(id string, c *gin.Context) (User, error) {
+	log.Println("[call] controller/user_service.go | func UpdateByID")
 	db := db.GetDB()
 	var u User
+	log.Println(id)
 
 	if err := db.Where("id = ?", id).First(&u).Error; err != nil {
 		return u, err
 	}
 
-	if err := c.BindJSON(&u); err != nil {
-		return u, err
-	}
+	// if err := c.BindJSON(&u); err != nil {
+	// 	log.Println(err)
+	// 	return u, err
+	// }
+
+	u.UserID = c.PostForm("user_id")
+	u.UserName = c.PostForm("user_name")
 
 	db.Save(&u)
+	log.Println(u)
+	log.Println("[call end] controller/user_service.go | func UpdateByID")
 
 	return u, nil
 }

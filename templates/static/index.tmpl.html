@@ -1,24 +1,21 @@
-<html>
+<span>
   {{template "header.tmpl.html"}}
   <body>
     {{template "nav.tmpl.html" . }}
-    <div class="jumbotron text-center">
-      <div class="container">
-        <a href="/" class="lang-logo">
-          <img src="/static/lang-logo.png">
-        </a>
-        <h1>Abomeで、これまでの人生を綴ろう。</h1>
-          <p>
-            Abomeは、これまでの人生を他人に知ってもらうためのサービスです。<br>
-            これまでどんな経験を積み、どんな挫折を味わい、どんな喜びを感じたか、<br>
-            時系列で振り返りましょう。
-          </p>
-          {{if .login_id }}
+    <div class="text-center">
+      <div class="container my-5">
+        <h1> Abomeで、これまでの人生を綴ろう。</h1>
+        <p>
+          Abomeは、これまでの人生を他人に知ってもらうためのサービスです。<br>
+          これまでどんな経験を積み、どんな挫折を味わい、どんな喜びを感じたか、<br>
+          時系列で振り返りましょう。
+        </p>
+        {{if .login_uid }}
 
-          {{ else }}
-            <a type="button" class="btn btn-lg btn-default" href="/signup"><span class="glyphiconglyphicon-flash"></span> 新規登録</a>
-            <a type="button" class="btn btn-lg btn-primary" href="/login"><span class="glyphiconglyphicon-download"></span> ログイン</a>
-          {{ end }}
+        {{ else }}
+          <a type="button" class="btn btn-lg btn-default" href="/signup"><span class="glyphiconglyphicon-flash"></span> 新規登録</a>
+          <a type="button" class="btn btn-lg btn-primary" href="/login"><span class="glyphiconglyphicon-download"></span> ログイン</a>
+        {{ end }}
       </div>
     </div>
   </body>

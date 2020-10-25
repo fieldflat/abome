@@ -42,7 +42,7 @@ func router() *gin.Engine {
 		log.Println(session.Get("UserID"))
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"login_name": session.Get("UserName"),
-			"login_id":   session.Get("UserID"),
+			"login_uid":  session.Get("UserID"),
 		})
 	})
 	// signup and login
@@ -65,6 +65,9 @@ func router() *gin.Engine {
 		u.PUT("/:id", userCtrl.Update)
 		u.DELETE("/:id", userCtrl.Delete)
 	}
+
+	router.GET("/user/edit/:id", userCtrl.Edit)
+	router.POST("/user/update/:id", userCtrl.Update)
 
 	return router
 }

@@ -50,7 +50,8 @@ func (pc Controller) Create(c *gin.Context) {
 		log.Printf("%v\n", session.Get("UserID"))
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"login_name": session.Get("UserName"),
-			"login_id":   session.Get("UserID"),
+			"login_uid":  session.Get("UserID"),
+			"login_id":   session.Get("ID"),
 		})
 	}
 	log.Println("[call end] controller/user_controller.go | func Create")
@@ -75,7 +76,8 @@ func (pc Controller) Login(c *gin.Context) {
 		log.Printf("%v\n", session.Get("UserID"))
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 			"login_name": session.Get("UserName"),
-			"login_id":   session.Get("UserID"),
+			"login_uid":  session.Get("UserID"),
+			"login_id":   session.Get("ID"),
 		})
 	}
 	log.Println("[call end] controller/user_controller.go | func Login")
@@ -91,7 +93,8 @@ func (pc Controller) Logout(c *gin.Context) {
 	session.Save()
 	c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 		"login_name": session.Get("UserName"),
-		"login_id":   session.Get("UserID"),
+		"login_uid":  session.Get("UserID"),
+		"login_id":   session.Get("ID"),
 	})
 }
 
@@ -109,18 +112,70 @@ func (pc Controller) Show(c *gin.Context) {
 	}
 }
 
+// Edit action: GET /users/edit/:id
+func (pc Controller) Edit(c *gin.Context) {
+	log.Println("[call] controller/user_controller.go | func Edit")
+	session := sessions.Default(c)
+	id := c.Params.ByName("id")
+	log.Println(id)
+	log.Println(session.Get("ID"))
+	var s user.Service
+	getUser, err := s.GetByID(id)
+
+	if err != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(err)
+	} else if id != session.Get("ID") {
+		c.HTML(http.StatusOK, "edit.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_uid":  session.Get("UserID"),
+			"login_id":   session.Get("ID"),
+			"email":      getUser.Email,
+		})
+	} else {
+		c.HTML(http.StatusOK, "edit.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_uid":  session.Get("UserID"),
+			"login_id":   session.Get("ID"),
+			"email":      getUser.Email,
+		})
+	}
+	log.Println("[call end] controller/user_controller.go | func Edit")
+}
+
 // Update action: PUT /users/:id
 func (pc Controller) Update(c *gin.Context) {
-	id := c.Params.ByName("id")
+	log.Println("[call] controller/user_controller.go | func Update")
 	var s user.Service
-	p, err := s.UpdateByID(id, c)
+	id := c.Params.ByName("id")
+	updateUser, err := s.UpdateByID(id, c)
+	session := sessions.Default(c)
 
 	if err != nil {
 		c.AbortWithStatus(400)
 		fmt.Println(err)
+	} else if id != session.Get("ID") {
+		log.Println(updateUser.UserID, updateUser.UserName)
+		session.Set("UserID", updateUser.UserID)
+		session.Set("UserName", updateUser.UserName)
+		session.Save()
+		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_uid":  session.Get("UserID"),
+			"login_id":   session.Get("ID"),
+		})
 	} else {
-		c.JSON(200, p)
+		log.Println(updateUser.UserID, updateUser.UserName)
+		session.Set("UserID", updateUser.UserID)
+		session.Set("UserName", updateUser.UserName)
+		session.Save()
+		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
+			"login_name": session.Get("UserName"),
+			"login_uid":  session.Get("UserID"),
+			"login_id":   session.Get("ID"),
+		})
 	}
+	log.Println("[call end] controller/user_controller.go | func Update")
 }
 
 // Delete action: DELETE /users/:id
@@ -145,6 +200,7 @@ func createSession(c *gin.Context, u user.User) {
 	log.Println("[call] controller/user_controller.go | func createSession")
 	session := sessions.Default(c)
 	session.Set("UserID", u.UserID)
+	session.Set("ID", u.ID)
 	session.Set("UserName", u.UserName)
 	session.Save()
 	log.Println("[call end] controller/user_controller.go | func createSession")
